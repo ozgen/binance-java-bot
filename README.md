@@ -133,6 +133,23 @@ java -jar target/binance-telegram-bot-0.0.1-SNAPSHOT.jar
 1. **Create a Telegram Bot**: Follow the instructions on [Telegram's official documentation](https://core.telegram.org/bots#creating-a-new-bot) to create a new bot.
 2. **Generate a Bot Token**: Use this [guide](https://medium.com/geekculture/generate-telegram-token-for-bot-api-d26faf9bf064) to generate a token for your Telegram bot.
 
+---
+
+## Example of the Bot in Action
+
+Here's an example of how the bot works when a user enters a symbol and selects a trading strategy:
+
+![Telegram Bot Example](./img/example.jpeg)
+
+1. The user enters a trading pair (e.g., `btcusdt`).
+2. The bot asks the user to choose a trading strategy.
+3. After selecting a strategy, the bot processes the signal and provides a response with the trading signal details.
+
+---
+
+Make sure to replace `./path_to_your_image/image.png` with the correct relative path to the image file in your repository.
+
+Let me know if you need further assistance with embedding the image!
 ## Test Coverage
 
 ### Running Tests
