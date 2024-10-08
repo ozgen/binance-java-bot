@@ -1,5 +1,3 @@
-Here's the updated README with the sample `.env` file section:
-
 # Binance Java Bot
 
 ## Introduction
