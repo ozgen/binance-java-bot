@@ -147,9 +147,6 @@ Here's an example of how the bot works when a user enters a symbol and selects a
 
 ---
 
-Make sure to replace `./path_to_your_image/image.png` with the correct relative path to the image file in your repository.
-
-Let me know if you need further assistance with embedding the image!
 ## Test Coverage
 
 ### Running Tests
