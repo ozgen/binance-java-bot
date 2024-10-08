@@ -1,12 +1,11 @@
 package com.ozgen.binancebot.service;
 
-import com.ozgen.binancebot.model.ProcessStatus;
-import com.ozgen.binancebot.model.telegram.TradingSignal;
-import com.ozgen.binancebot.repository.BuyOrderRepository;
-import com.ozgen.binancebot.repository.SellOrderRepository;
+import com.ozgen.binancebot.adapters.repository.BuyOrderRepository;
+import com.ozgen.binancebot.adapters.repository.SellOrderRepository;
+import com.ozgen.binancebot.adapters.repository.TradingSignalRepository;
 import com.ozgen.binancebot.model.bot.BuyOrder;
 import com.ozgen.binancebot.model.bot.SellOrder;
-import com.ozgen.binancebot.repository.TradingSignalRepository;
+import com.ozgen.binancebot.model.telegram.TradingSignal;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.ozgen.binancebot.model.ProcessStatus.SELL;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class BotOrderService {
     public SellOrder createSellOrder(SellOrder sellOrder) {
         try {
             TradingSignal tradingSignal = sellOrder.getTradingSignal();
-            tradingSignal.setIsProcessed(ProcessStatus.SELL);
+            tradingSignal.setIsProcessed(SELL);
             this.tradingSignalRepository.save(tradingSignal);
             SellOrder savedOrder = sellOrderRepository.save(sellOrder);
             log.info("Sell order created: {}", savedOrder);

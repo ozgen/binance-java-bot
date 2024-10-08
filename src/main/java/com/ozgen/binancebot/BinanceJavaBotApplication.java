@@ -6,10 +6,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class TelegramBinanceBotApplication {
+public class BinanceJavaBotApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TelegramBinanceBotApplication.class, args);
+        SpringApplication.run(BinanceJavaBotApplication.class, args);
     }
 
 }

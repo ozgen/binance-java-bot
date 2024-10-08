@@ -1,9 +1,9 @@
 package com.ozgen.binancebot.service;
 
+import com.ozgen.binancebot.adapters.repository.FutureTradeRepository;
 import com.ozgen.binancebot.model.TradeStatus;
 import com.ozgen.binancebot.model.bot.FutureTrade;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
-import com.ozgen.binancebot.repository.FutureTradeRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FutureTradeService {
     private static final Logger log = LoggerFactory.getLogger(FutureTradeService.class);
-
 
     private final FutureTradeRepository futureTradeRepository;
 

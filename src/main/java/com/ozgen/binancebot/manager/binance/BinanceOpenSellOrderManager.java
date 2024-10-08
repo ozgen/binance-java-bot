@@ -32,7 +32,7 @@ public class BinanceOpenSellOrderManager {
     public void processOpenSellOrders() {
         Date searchDate = getSearchDate();
         List<TradingSignal> tradingSignals = this.tradingSignalService
-                .getTradingSignalsAfterDateAndIsProcessIn(searchDate, List.of(ProcessStatus.BUY));
+                .getDefaultTradingSignalsAfterDateAndIsProcessIn(searchDate, List.of(ProcessStatus.BUY));
         if (tradingSignals.isEmpty()) {
             log.info("No trading signal has been detected.");
             return;
@@ -46,7 +46,7 @@ public class BinanceOpenSellOrderManager {
     public void processNotCompletedSellOrders() {
         Date searchDate = getSearchDate();
         List<TradingSignal> sellSignals = this.tradingSignalService
-                .getTradingSignalsAfterDateAndIsProcessIn(searchDate, List.of(ProcessStatus.SELL));
+                .getDefaultTradingSignalsAfterDateAndIsProcessIn(searchDate, List.of(ProcessStatus.SELL));
 
         if (sellSignals.isEmpty()) {
             log.info("No trading signal has been detected.");

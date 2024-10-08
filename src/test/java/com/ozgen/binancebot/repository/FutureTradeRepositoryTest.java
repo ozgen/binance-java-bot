@@ -1,6 +1,7 @@
 package com.ozgen.binancebot.repository;
 
 
+import com.ozgen.binancebot.adapters.repository.FutureTradeRepository;
 import com.ozgen.binancebot.model.TradeStatus;
 import com.ozgen.binancebot.model.bot.FutureTrade;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,7 +1,8 @@
 package com.ozgen.binancebot.service;
 
+import com.ozgen.binancebot.adapters.repository.TradingSignalRepository;
+import com.ozgen.binancebot.model.TradingStrategy;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
-import com.ozgen.binancebot.repository.TradingSignalRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ public class TradingSignalService {
 
     private static final Logger log = LoggerFactory.getLogger(TradingSignalService.class);
 
-
     private final TradingSignalRepository repository;
 
     public TradingSignal saveTradingSignal(TradingSignal tradingSignal) {
@@ -30,11 +30,24 @@ public class TradingSignalService {
         }
     }
 
-    public List<TradingSignal> getTradingSignalsByIdList(List<String> uuidList){
-        return this.repository.findAllByIdIn(uuidList);
+    public List<TradingSignal> getTradingSignalsByIdList(List<String> uuidList) {
+        return this.repository.findAllByIdInAndStrategyIn(uuidList, List.of(TradingStrategy.DEFAULT));
     }
 
-    public List<TradingSignal> getTradingSignalsAfterDateAndIsProcessIn(Date date, List<Integer> processStatuses){
-        return this.repository.findAllByCreatedAtAfterAndIsProcessedIn(date, processStatuses);
+    public List<TradingSignal> getDefaultTradingSignalsAfterDateAndIsProcessIn(Date date, List<Integer> processStatuses) {
+        return this.repository.findAllByCreatedAtAfterAndIsProcessedInAndStrategyIn(date, processStatuses, List.of(TradingStrategy.DEFAULT));
+    }
+
+    public List<TradingSignal> getSellLaterTradingSignalsAfterDateAndIsProcessIn(Date date, List<Integer> processStatuses) {
+        return this.repository.findAllByCreatedAtAfterAndIsProcessedInAndStrategyIn(date, processStatuses, List.of(TradingStrategy.SELL_LATER));
+    }
+
+    // todo write unit tests
+    public List<TradingSignal> getAlgorithmUsedTradingSignalsAfterDateAndIsProcessIn(Date date, List<Integer> processStatuses) {
+        return this.repository.findAllByCreatedAtAfterAndIsProcessedInAndStrategyIn(date, processStatuses, List.of(TradingStrategy.USE_ALGORITHM));
+    }
+
+    public List<TradingSignal> getAllTradingSignalsAfterDateAndIsProcessIn(Date date, List<Integer> processStatuses) {
+        return this.repository.findAllByCreatedAtAfterAndIsProcessedInAndStrategyIn(date, processStatuses, List.of(TradingStrategy.DEFAULT, TradingStrategy.SELL_LATER));
     }
 }

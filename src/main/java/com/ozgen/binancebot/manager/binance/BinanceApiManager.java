@@ -40,6 +40,10 @@ public class BinanceApiManager {
         return this.tickerDataService.createTickerData(tickerData);
     }
 
+    public boolean checkSymbol(String symbol){
+        return this.binanceAPI.checkSymbol(symbol);
+    }
+
     List<OrderInfo> getOpenOrders(String symbol) throws Exception {
         String openOrdersJson = this.binanceAPI.getOpenOrders(symbol);
         List<OrderInfo> orderInfoList = JsonParser.parseOrderInfoJson(openOrdersJson);
@@ -94,17 +98,14 @@ public class BinanceApiManager {
         return this.assetBalanceService.createAssetBalances(assetBalances);
     }
 
-    KlineData getKlineData(String symbol) throws Exception {
+    List<KlineData> getListOfKlineData(String symbol) throws Exception {
         String klinesJson = this.binanceAPI.getKlines(symbol);
         List<KlineData> klineDataList = JsonParser.parseKlinesJson(klinesJson);
-        KlineData klineData = klineDataList.stream().findFirst().orElse(null);
-        if(klineData == null){
-            log.info("kline data is null");
-            return klineData;
-        }
-        klineData.setSymbol(symbol);
-        log.info("kline data are parsed, successfully.");
-        return this.klineDataService.createKlineData(klineData);
+        klineDataList.forEach(klineData -> klineData.setSymbol(symbol));
+        log.info("kline data list are parsed, successfully.");
+//        return this.klineDataService.createListOfKlineData(klineDataList);
+        // todo does this really needed?
+        return klineDataList;
     }
 
 }

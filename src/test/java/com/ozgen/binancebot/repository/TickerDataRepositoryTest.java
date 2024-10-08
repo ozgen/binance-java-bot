@@ -1,5 +1,6 @@
 package com.ozgen.binancebot.repository;
 
+import com.ozgen.binancebot.adapters.repository.TickerDataRepository;
 import com.ozgen.binancebot.model.binance.TickerData;
 import com.ozgen.binancebot.utils.TestData;
 import org.junit.jupiter.api.BeforeEach;

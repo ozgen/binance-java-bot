@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class NewSellOrderEventListener implements ApplicationListener<NewSellOrderEvent> {
 
-
     private final BinanceSellOrderManager binanceSellOrderManager;
 
     @Override

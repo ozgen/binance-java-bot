@@ -10,8 +10,6 @@ public class SyncUtil {
     private static final Logger log = LoggerFactory.getLogger(SyncUtil.class);
 
     public static volatile boolean wasInterrupted = false;
-
-
     public static void pauseBetweenOperations() {
         try {
             TimeUnit.SECONDS.sleep(5);

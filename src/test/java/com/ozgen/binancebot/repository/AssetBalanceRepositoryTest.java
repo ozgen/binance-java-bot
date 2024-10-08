@@ -1,5 +1,6 @@
 package com.ozgen.binancebot.repository;
 
+import com.ozgen.binancebot.adapters.repository.AssetBalanceRepository;
 import com.ozgen.binancebot.model.binance.AssetBalance;
 import com.ozgen.binancebot.utils.TestData;
 import org.junit.jupiter.api.BeforeEach;

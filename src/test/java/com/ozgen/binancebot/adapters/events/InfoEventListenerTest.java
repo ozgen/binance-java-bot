@@ -12,13 +12,13 @@ import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.verify;
 
-class InfoEventEventListenerTest {
+class InfoEventListenerTest {
 
     @Mock
     private TelegramSignalNotifier telegramSignalNotifier;
 
     @InjectMocks
-    private InfoEventEventListener infoEventEventListener;
+    private InfoEventListener infoEventListener;
 
     @BeforeEach
     public void setUp() {
@@ -29,7 +29,7 @@ class InfoEventEventListenerTest {
     void testOnApplicationEvent() {
         InfoEvent infoEvent = new InfoEvent(this, new BuyOrder().toString());
 
-        this.infoEventEventListener.onApplicationEvent(infoEvent);
+        this.infoEventListener.onApplicationEvent(infoEvent);
 
         verify(this.telegramSignalNotifier)
                 .processInfoEvent(infoEvent);

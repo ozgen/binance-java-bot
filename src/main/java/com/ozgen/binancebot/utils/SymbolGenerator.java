@@ -2,8 +2,6 @@ package com.ozgen.binancebot.utils;
 
 public class SymbolGenerator {
 
-    public static final String BTC = "BTC";
-
     public static String generateBuyOrderSymbol(String symbol, String currency) {
         if (symbol.startsWith(currency)) {
             return symbol;

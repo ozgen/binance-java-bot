@@ -1,7 +1,7 @@
 package com.ozgen.binancebot.service;
 
 import com.ozgen.binancebot.model.binance.AssetBalance;
-import com.ozgen.binancebot.repository.AssetBalanceRepository;
+import com.ozgen.binancebot.adapters.repository.AssetBalanceRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,6 @@ public class AssetBalanceService {
     private static final Logger log = LoggerFactory.getLogger(AssetBalanceService.class);
 
     private final AssetBalanceRepository assetBalanceRepository;
-
 
     public AssetBalance createAssetBalance(AssetBalance assetBalance) {
         try {

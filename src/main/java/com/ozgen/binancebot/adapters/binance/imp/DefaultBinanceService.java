@@ -46,7 +46,7 @@ public class DefaultBinanceService implements BinanceAPI {
         parameters.put("side", "BUY");
         parameters.put("type", "LIMIT");
         parameters.put("timeInForce", "GTC");
-        parameters.put("quantity",GenericParser.getFormattedDouble(quantity));
+        parameters.put("quantity", GenericParser.getFormattedDouble(quantity));
         parameters.put("price", GenericParser.getFormattedDouble(price)); // Limit price
 
         parameters.put("cancelReplaceMode", "STOP_ON_FAILURE");
@@ -104,5 +104,18 @@ public class DefaultBinanceService implements BinanceAPI {
         parameters.put("symbol", symbol);
         parameters.put("interval", "1h");
         return this.binanceClient.createMarket().klines(parameters);
+    }
+
+    @Override
+    public boolean checkSymbol(String symbol) {
+        LinkedHashMap<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("symbol", symbol);
+
+        try {
+            this.binanceClient.createMarket().tickerSymbol(parameters);
+        } catch (Exception exception) {
+            return false;
+        }
+        return true;
     }
 }

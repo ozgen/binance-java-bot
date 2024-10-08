@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
-@ConditionalOnProperty(name = "bot.telegram.error.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "bot.telegram.enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class TelegramSignalNotifier {
 
@@ -24,15 +24,15 @@ public class TelegramSignalNotifier {
         this.sendInfoMessage(message);
     }
 
-    private void sendInfoMessage(String errorMessage) {
+    private void sendInfoMessage(String infoMessage) {
         if (this.telegramBot.getChannelId() == null) {
             log.error("Please write something to info channel to set channel id.");
             return;
         }
         SendMessage message = new SendMessage();
         message.setChatId(this.telegramBot.getChannelId());
-        message.setText(errorMessage);
-        log.info(errorMessage);
+        message.setText(infoMessage);
+        log.info(infoMessage);
         try {
             this.telegramBot.execute(message);
         } catch (TelegramApiException e) {

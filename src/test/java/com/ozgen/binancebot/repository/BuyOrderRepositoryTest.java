@@ -1,5 +1,6 @@
 package com.ozgen.binancebot.repository;
 
+import com.ozgen.binancebot.adapters.repository.BuyOrderRepository;
 import com.ozgen.binancebot.model.ProcessStatus;
 import com.ozgen.binancebot.model.bot.BuyOrder;
 import com.ozgen.binancebot.model.telegram.TradingSignal;

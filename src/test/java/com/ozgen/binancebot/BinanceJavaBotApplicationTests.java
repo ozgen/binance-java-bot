@@ -1,6 +1,6 @@
 package com.ozgen.binancebot;
 
-import com.ozgen.binancebot.adapters.events.InfoEventEventListener;
+import com.ozgen.binancebot.adapters.telegram.TelegramBinanceBot;
 import com.ozgen.binancebot.configuration.BinanceTestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,10 +11,10 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(BinanceTestConfig.class)
-class TelegramBinanceBotApplicationTests {
+class BinanceJavaBotApplicationTests {
 
     @MockBean
-    private InfoEventEventListener infoEventEventListener;
+    private TelegramBinanceBot telegramBinanceBot;
 
     @Test
     void contextLoads() {
