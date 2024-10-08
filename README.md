@@ -4,6 +4,8 @@
 
 The Binance Java Bot is an automated trading bot designed to interact with the Binance cryptocurrency exchange and execute trades based on advanced technical analysis strategies. The bot utilizes key technical indicators such as harmonic patterns and Fibonacci retracement levels to determine optimal buy and sell points. This integration also includes a Telegram bot, allowing users to interact with the bot and receive trade signals directly via Telegram.
 
+NOT: development still in progress ✔️
+
 ## Features
 - Automatic trading execution using Binance API
 - Detection of harmonic patterns (ABCD, Bat, Gartley) in market data
