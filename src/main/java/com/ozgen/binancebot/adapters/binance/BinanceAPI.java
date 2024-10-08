@@ -24,4 +24,6 @@ public interface BinanceAPI {
     public String getUserAsset();
 
     public String getKlines(String symbol);
+
+    public boolean checkSymbol(String symbol);
 }

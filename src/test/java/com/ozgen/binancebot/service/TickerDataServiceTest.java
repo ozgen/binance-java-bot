@@ -2,7 +2,7 @@ package com.ozgen.binancebot.service;
 
 
 import com.ozgen.binancebot.model.binance.TickerData;
-import com.ozgen.binancebot.repository.TickerDataRepository;
+import com.ozgen.binancebot.adapters.repository.TickerDataRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

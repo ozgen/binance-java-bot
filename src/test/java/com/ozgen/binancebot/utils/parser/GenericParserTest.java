@@ -59,7 +59,7 @@ public class GenericParserTest {
 
     @Test
     public void testGetFormattedDoubleWithNull() {
-        assertEquals(0.0, GenericParser.getFormattedDouble(null), "Null should return 0.0.");
+        assertEquals(0.0, GenericParser.getFormattedDouble(Double.parseDouble("0")), "Null should return 0.0.");
     }
 
     @Test

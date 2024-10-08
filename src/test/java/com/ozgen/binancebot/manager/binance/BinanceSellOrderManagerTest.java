@@ -56,6 +56,8 @@ public class BinanceSellOrderManagerTest {
     @Mock
     private BotOrderService botOrderService;
     @Mock
+    private BinanceHelper binanceHelper;
+    @Mock
     private ApplicationEventPublisher publisher;
 
     @InjectMocks
@@ -123,6 +125,8 @@ public class BinanceSellOrderManagerTest {
                 .thenAnswer((Answer<SellOrder>) invocation -> (SellOrder) invocation.getArguments()[0]);
         when(this.binanceApiManager.newOrderWithStopLoss(any(), any(), any(), any()))
                 .thenReturn(this.orderResponse);
+        when(this.binanceHelper.calculateSellPriceWithBotConfiguration(this.buyOrder))
+                .thenReturn(0.0106);
         NewSellOrderEvent event = new NewSellOrderEvent(this, this.buyOrder);
 
         //Act
@@ -160,6 +164,8 @@ public class BinanceSellOrderManagerTest {
                 .thenAnswer((Answer<SellOrder>) invocation -> (SellOrder) invocation.getArguments()[0]);
         when(this.binanceApiManager.newOrderWithStopLoss(any(), any(), any(), any()))
                 .thenReturn(this.orderResponse);
+        when(this.binanceHelper.calculateSellPriceWithBotConfiguration(this.buyOrder))
+                .thenReturn(0.0106);
         NewSellOrderEvent event = new NewSellOrderEvent(this, this.buyOrder);
 
         //Act

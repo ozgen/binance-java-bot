@@ -1,10 +1,10 @@
 package com.ozgen.binancebot.service;
 
 
+import com.ozgen.binancebot.adapters.repository.FutureTradeRepository;
 import com.ozgen.binancebot.model.TradeStatus;
 import com.ozgen.binancebot.model.bot.FutureTrade;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
-import com.ozgen.binancebot.repository.FutureTradeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

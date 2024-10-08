@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class InfoEventEventListener implements ApplicationListener<InfoEvent> {
+public class InfoEventListener implements ApplicationListener<InfoEvent> {
 
     private final TelegramSignalNotifier telegramSignalNotifier;
 

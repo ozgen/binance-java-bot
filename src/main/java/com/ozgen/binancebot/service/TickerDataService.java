@@ -1,7 +1,7 @@
 package com.ozgen.binancebot.service;
 
 import com.ozgen.binancebot.model.binance.TickerData;
-import com.ozgen.binancebot.repository.TickerDataRepository;
+import com.ozgen.binancebot.adapters.repository.TickerDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,6 @@ public class TickerDataService {
     private static final Logger log = LoggerFactory.getLogger(TickerDataService.class);
 
     private final TickerDataRepository tickerDataRepository;
-
 
     public TickerData createTickerData(TickerData tickerData) {
         try {

@@ -1,7 +1,6 @@
 package com.ozgen.binancebot.manager.bot;
 
 import com.ozgen.binancebot.configuration.properties.ScheduleConfiguration;
-import com.ozgen.binancebot.model.ProcessStatus;
 import com.ozgen.binancebot.model.events.IncomingTradingSignalEvent;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
 import com.ozgen.binancebot.service.TradingSignalService;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 
+import static com.ozgen.binancebot.model.ProcessStatus.INIT;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -26,10 +27,10 @@ public class TradeSignalManager {
 
     public void processInitTradingSignals() {
         log.info("Processing initial trading signals...");
-        List<Integer> list = List.of(ProcessStatus.INIT);
+        List<Integer> list = List.of(INIT);
         Date dateBeforeInMonths = DateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
         log.debug("Retrieving trading signals after date: {}", dateBeforeInMonths);
-        List<TradingSignal> tradingSignals = this.tradingSignalService.getTradingSignalsAfterDateAndIsProcessIn(dateBeforeInMonths, list);
+        List<TradingSignal> tradingSignals = this.tradingSignalService.getAllTradingSignalsAfterDateAndIsProcessIn(dateBeforeInMonths, list);
         log.info("Found {} trading signals to process.", tradingSignals.size());
         tradingSignals.forEach(this::processTradingSignal);
     }

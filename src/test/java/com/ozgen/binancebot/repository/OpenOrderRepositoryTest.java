@@ -1,6 +1,7 @@
 package com.ozgen.binancebot.repository;
 
 
+import com.ozgen.binancebot.adapters.repository.OpenOrderRepository;
 import com.ozgen.binancebot.model.binance.OpenOrder;
 import com.ozgen.binancebot.utils.TestData;
 import org.junit.jupiter.api.BeforeEach;

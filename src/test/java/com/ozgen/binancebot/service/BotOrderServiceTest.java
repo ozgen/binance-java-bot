@@ -1,12 +1,12 @@
 package com.ozgen.binancebot.service;
 
 
+import com.ozgen.binancebot.adapters.repository.BuyOrderRepository;
+import com.ozgen.binancebot.adapters.repository.SellOrderRepository;
+import com.ozgen.binancebot.adapters.repository.TradingSignalRepository;
 import com.ozgen.binancebot.model.bot.BuyOrder;
 import com.ozgen.binancebot.model.bot.SellOrder;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
-import com.ozgen.binancebot.repository.BuyOrderRepository;
-import com.ozgen.binancebot.repository.SellOrderRepository;
-import com.ozgen.binancebot.repository.TradingSignalRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,7 +16,11 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

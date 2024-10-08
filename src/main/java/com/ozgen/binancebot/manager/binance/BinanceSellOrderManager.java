@@ -1,7 +1,6 @@
 package com.ozgen.binancebot.manager.binance;
 
 import com.ozgen.binancebot.configuration.properties.BotConfiguration;
-import com.ozgen.binancebot.model.ProcessStatus;
 import com.ozgen.binancebot.model.TradeStatus;
 import com.ozgen.binancebot.model.binance.AssetBalance;
 import com.ozgen.binancebot.model.bot.BuyOrder;
@@ -11,7 +10,6 @@ import com.ozgen.binancebot.model.events.NewSellOrderEvent;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
 import com.ozgen.binancebot.service.BotOrderService;
 import com.ozgen.binancebot.service.FutureTradeService;
-import com.ozgen.binancebot.utils.PriceCalculator;
 import com.ozgen.binancebot.utils.SymbolGenerator;
 import com.ozgen.binancebot.utils.parser.GenericParser;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +18,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.ozgen.binancebot.model.ProcessStatus.SELL;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class BinanceSellOrderManager {
     private final FutureTradeService futureTradeService;
     private final BotOrderService botOrderService;
     private final ApplicationEventPublisher publisher;
+    private final BinanceHelper binanceHelper;
 
 
     public void processNewSellOrderEvent(NewSellOrderEvent event) {
@@ -99,7 +100,7 @@ public class BinanceSellOrderManager {
     }
 
     private SellOrder initializeSellOrder(BuyOrder buyOrder, Double coinAmount, TradingSignal tradingSignal) {
-        double sellPrice = PriceCalculator.calculateCoinPriceInc(buyOrder.getBuyPrice(), this.botConfiguration.getProfitPercentage());
+        double sellPrice = this.binanceHelper.calculateSellPriceWithBotConfiguration(buyOrder);
         double stopLoss = GenericParser.getDouble(tradingSignal.getStopLoss()).get();
         String sellOrderSymbol = buyOrder.getSymbol();
 
@@ -113,7 +114,7 @@ public class BinanceSellOrderManager {
         sellOrder.setCoinAmount(coinAmount);
         sellOrder.setTimes(sellOrder.getTimes() + 1);
         sellOrder.setStopLoss(stopLoss);
-        tradingSignal.setIsProcessed(ProcessStatus.SELL);
+        tradingSignal.setIsProcessed(SELL);
         sellOrder.setTradingSignal(tradingSignal);
 
         return sellOrder;

@@ -48,5 +48,9 @@ public class GenericParser {
             return 0.0;
         }
     }
-}
+
+    public static double getFormattedDouble(String data) {
+        return getFormattedDouble(getDouble(data).get());
+    }
+    }
 
