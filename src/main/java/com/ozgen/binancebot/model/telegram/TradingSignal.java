@@ -1,6 +1,7 @@
 package com.ozgen.binancebot.model.telegram;
 
 import com.ozgen.binancebot.model.TradingStrategy;
+import com.ozgen.binancebot.model.TrendingStatus;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,8 +43,10 @@ public class TradingSignal {
 
     private int isProcessed;
     @Enumerated(EnumType.STRING)
-    private TradingStrategy strategy;
+    private TradingStrategy strategy = TradingStrategy.DEFAULT;
     private String investAmount;
+    @Enumerated(EnumType.STRING)
+    private TrendingStatus trendingStatus;
 
     public TradingSignal() {
     }
@@ -70,14 +73,14 @@ public class TradingSignal {
         updatedAt = new Date();
     }
 
-    // Buy Entry Condition based on entry range
+    // Buy Entry Condition based on entry range and harmonic pattern result
     public boolean isBuyEntry(boolean isPatternDetected) {
         double entryStartValue = Double.parseDouble(entryStart);
         double entryEndValue = Double.parseDouble(entryEnd);
         return isPatternDetected && closePrice >= entryStartValue && closePrice <= entryEndValue;
     }
 
-    // Sell Entry Condition based on entry range
+    // Sell Entry Condition based on entry range and harmonic pattern result
     public boolean isSellEntry(boolean isPatternDetected) {
         double entryStartValue = Double.parseDouble(entryStart);
         double entryEndValue = Double.parseDouble(entryEnd);
@@ -87,6 +90,9 @@ public class TradingSignal {
     public String formatTradingSignal() {
         StringBuilder formattedSignal = new StringBuilder();
         DecimalFormat decimalFormat = new DecimalFormat("#.######");
+
+        // Add trending status (BUY or SELL)
+        formattedSignal.append("TRENDING STATUS: ").append(trendingStatus.name()).append("\n\n");
 
         // Format entryStart, entryEnd, and stopLoss
         String formattedEntryStart = decimalFormat.format(Double.parseDouble(entryStart));

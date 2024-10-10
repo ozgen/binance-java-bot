@@ -4,6 +4,7 @@ import com.ozgen.binancebot.model.TrendingStatus;
 import com.ozgen.binancebot.model.binance.KlineData;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
 import com.ozgen.binancebot.utils.parser.GenericParser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,28 +13,41 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class TradingSignalEvaluator {
 
-    // Generate a TradingSignal based on the kline data
-    public TradingSignal generateSignal(List<KlineData> klines, String symbol) {
+    private final ZigZagStrategy zigZagStrategy;
+    private final FibonacciCalculator fibonacciCalculator;
+
+
+    public TradingSignal generateSignalWithTrendDecision(List<KlineData> klines, String symbol) {
         if (klines.size() < 5) {
             log.warn("Not enough data for analysis.");
             return null;
         }
 
-        // Find the high and low from the kline data
-        double high = klines.stream()
-                .mapToDouble(k -> GenericParser.getFormattedDouble(k.getHighPrice()))
-                .max()
-                .orElse(0);
-        double low = klines.stream()
-                .mapToDouble(k -> GenericParser.getFormattedDouble(k.getLowPrice()))
-                .min()
-                .orElse(0);
+        // Find the last two significant ZigZag points (high and low)
+        double[] lastZigZagPoints = this.zigZagStrategy.getLastTwoZigZagPoints(klines);
 
-        // Calculate Fibonacci levels
-        double[] fibLevels = FibonacciCalculator.calculateFibonacciLevels(high, low);
+        if (lastZigZagPoints == null || lastZigZagPoints.length < 2) {
+            log.warn("Unable to detect the last two ZigZag points.");
+            return null;
+        }
+
+        double zigzagHigh = lastZigZagPoints[0];
+        double zigzagLow = lastZigZagPoints[1];
+
+        // Determine trend direction based on ZigZag points
+        TrendingStatus trendingStatus;
+        if (zigzagHigh > zigzagLow) {
+            trendingStatus = TrendingStatus.BUY;  // Upward trend
+        } else {
+            trendingStatus = TrendingStatus.SELL;  // Downward trend
+        }
+
+        // Calculate Fibonacci levels based on the last two ZigZag points
+        double[] fibLevels = this.fibonacciCalculator.calculateFibonacciLevels(zigzagHigh, zigzagLow);
 
         // Entry range and take profit levels
         double entryStart = fibLevels[0];  // 0.236 Fibonacci level
@@ -44,10 +58,25 @@ public class TradingSignalEvaluator {
         String entryEndStr = entryStart < entryEnd ? String.valueOf(entryEnd) : String.valueOf(entryStart);
 
         // Filter valid take profit levels
-        List<String> takeProfits = Arrays.stream(fibLevels, 2, fibLevels.length - 1)  // 0.500 to 0.764 levels
-                .filter(profit -> profit > Math.min(entryStart, entryEnd))
-                .mapToObj(String::valueOf)
-                .collect(Collectors.toList());
+        List<String> takeProfits;
+
+        switch (trendingStatus) {
+            case BUY -> {
+                // For buy signals, take profits are at higher Fibonacci levels
+                takeProfits = Arrays.stream(fibLevels, 2, fibLevels.length - 1)  // 0.500 to 0.764 levels
+                        .filter(profit -> profit > Math.min(entryStart, entryEnd))
+                        .mapToObj(String::valueOf)
+                        .collect(Collectors.toList());
+            }
+            case SELL -> {
+                // For sell signals, take profits at lower targets
+                takeProfits = Arrays.stream(fibLevels, 2, fibLevels.length - 1)  // 0.500 to 0.764 levels
+                        .filter(profit -> profit < Math.max(entryStart, entryEnd))  // Filter lower profit targets
+                        .mapToObj(String::valueOf)
+                        .collect(Collectors.toList());
+            }
+            default -> takeProfits = List.of();  // In case of default or no clear trending status
+        }
 
         // Stop loss at 1.000 Fibonacci level
         String stopLoss = String.valueOf(fibLevels[5]);  // 1.000 Fibonacci level
@@ -60,8 +89,8 @@ public class TradingSignalEvaluator {
         double highPrice = GenericParser.getFormattedDouble(latestKline.getHighPrice());
         double lowPrice = GenericParser.getFormattedDouble(latestKline.getLowPrice());
 
-        // Create and return the TradingSignal object
-        return new TradingSignal(
+        // Generate the TradingSignal based on the trend
+        TradingSignal tradingSignal = new TradingSignal(
                 symbol,
                 entryStartStr,
                 entryEndStr,
@@ -71,28 +100,43 @@ public class TradingSignalEvaluator {
                 highPrice,
                 lowPrice
         );
+
+        tradingSignal.setTrendingStatus(trendingStatus);  // Set BUY or SELL status
+
+        return tradingSignal;
     }
 
-    public TrendingStatus checkTrend(List<KlineData> klines, String symbol) {
-        boolean patternDetected = HarmonicPatterns.detectABCDPattern(
-                klines.get(0), klines.get(1), klines.get(2), klines.get(3), klines.get(4));
-        TradingSignal tradingSignal = this.generateSignal(klines, symbol);
-        if(tradingSignal.isBuyEntry(patternDetected)){
-            return TrendingStatus.BUY;
-        } else if (tradingSignal.isSellEntry(patternDetected)) {
-            return TrendingStatus.SELL;
-        }
-        return TrendingStatus.DEFAULT;
-    }
+    public TrendingStatus checkTrend(List<KlineData> klines) {
+        // Convert KlineData to a list of prices (using close prices for simplicity)
+        List<Double> prices = klines.stream()
+                .map(k -> GenericParser.getDouble(k.getClosePrice()).get())
+                .collect(Collectors.toList());
 
-    public TrendingStatus checkTrend(List<KlineData> klines, TradingSignal tradingSignal) {
-        boolean patternDetected = HarmonicPatterns.detectABCDPattern(
-                klines.get(0), klines.get(1), klines.get(2), klines.get(3), klines.get(4));
-        if(tradingSignal.isBuyEntry(patternDetected)){
+        // Calculate the ZigZag points
+        List<Double> zigZagPoints = this.zigZagStrategy.calculateZigZag(prices);
+
+        if (zigZagPoints.size() < 2) {
+            log.warn("Not enough ZigZag points for trend calculation.");
+            return TrendingStatus.DEFAULT;
+        }
+
+        double lastZigZagPoint = zigZagPoints.get(zigZagPoints.size() - 1);
+        double currentPrice = prices.get(prices.size() - 1);
+
+        // Define a threshold (e.g., 1%) to confirm significant buy/sell signal
+        double threshold = 0.01 * currentPrice;  // 1% of current price
+
+        // Buy if the current price is significantly higher than the last ZigZag low
+        if (currentPrice > lastZigZagPoint + threshold) {
+            log.info("Buying at price: '{}'", currentPrice);
             return TrendingStatus.BUY;
-        } else if (tradingSignal.isSellEntry(patternDetected)) {
+        }
+        // Sell if the current price is significantly lower than the last ZigZag high
+        else if (currentPrice < lastZigZagPoint - threshold) {
+            log.info("Selling at price: '{}'", currentPrice);
             return TrendingStatus.SELL;
         }
+
         return TrendingStatus.DEFAULT;
     }
 }

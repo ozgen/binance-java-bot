@@ -8,8 +8,8 @@ import com.ozgen.binancebot.model.binance.TickerData;
 import com.ozgen.binancebot.model.bot.BuyOrder;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
 import com.ozgen.binancebot.signal.FibonacciCalculator;
-import com.ozgen.binancebot.signal.HarmonicPatterns;
 import com.ozgen.binancebot.signal.TradingSignalEvaluator;
+import com.ozgen.binancebot.signal.ZigZagStrategy;
 import com.ozgen.binancebot.utils.PriceCalculator;
 import com.ozgen.binancebot.utils.parser.GenericParser;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,8 @@ public class BinanceHelper {
     private final BotConfiguration botConfiguration;
     private final BinanceApiManager binanceApiManager;
     private final TradingSignalEvaluator tradingSignalEvaluator;
+    private final FibonacciCalculator fibonacciCalculator;
+    private final ZigZagStrategy zigZagStrategy;
 
 
     public boolean hasAccountEnoughAsset(List<AssetBalance> assets, TradingSignal tradingSignal) throws Exception {
@@ -68,7 +70,7 @@ public class BinanceHelper {
 
     public TickerData getTickerData(String symbol) {
         try {
-            return binanceApiManager.getTickerPrice24(symbol);
+            return this.binanceApiManager.getTickerPrice24(symbol);
         } catch (Exception e) {
             log.error("Error fetching ticker data for symbol {}: {}", symbol, e.getMessage());
             throw new RuntimeException("Error fetching ticker data", e);
@@ -77,7 +79,7 @@ public class BinanceHelper {
 
     public List<KlineData> getRecentKlines(String symbol) {
         try {
-            return binanceApiManager.getListOfKlineData(symbol);
+            return this.binanceApiManager.getListOfKlineData(symbol);
         } catch (Exception e) {
             log.error("Error fetching Kline data for symbol {}: {}", symbol, e.getMessage());
             throw new RuntimeException("Error fetching Kline data", e);
@@ -97,7 +99,7 @@ public class BinanceHelper {
             return true;
         }
 
-        if (this.tradingSignalEvaluator.checkTrend(recentKlines, buyOrder.getSymbol()).equals(TrendingStatus.SELL)) {
+        if (this.tradingSignalEvaluator.checkTrend(recentKlines).equals(TrendingStatus.SELL)) {
             log.info("Fibonacci level or harmonic pattern detected for sell. Symbol: {}, Current price: {}",
                     buyOrder.getSymbol(), currentPrice);
             return true;
@@ -109,23 +111,38 @@ public class BinanceHelper {
     public Double calculateSellPrice(BuyOrder buyOrder, List<KlineData> recentKlines, TickerData tickerData) {
         double currentPrice = GenericParser.getFormattedDouble(tickerData.getLastPrice());
         double stopLoss = buyOrder.getStopLoss();
-        double high = recentKlines.stream().mapToDouble(k -> GenericParser.getFormattedDouble(k.getHighPrice())).max().orElse(0);
-        double low = recentKlines.stream().mapToDouble(k -> GenericParser.getFormattedDouble(k.getLowPrice())).min().orElse(0);
-        double[] fibLevels = FibonacciCalculator.calculateFibonacciLevels(high, low);
-        boolean harmonicPatternDetected = HarmonicPatterns.detectABCDPattern(
-                recentKlines.get(0), recentKlines.get(1), recentKlines.get(2), recentKlines.get(3), recentKlines.get(4));
 
+        // Convert KlineData high/low prices into a list of double values
+        List<Double> highPrices = recentKlines.stream().map(k -> GenericParser.getFormattedDouble(k.getHighPrice())).toList();
+        List<Double> lowPrices = recentKlines.stream().map(k -> GenericParser.getFormattedDouble(k.getLowPrice())).toList();
+
+        // Calculate the ZigZag points for highs and lows
+        List<Double> zigZagPointsHigh = this.zigZagStrategy.calculateZigZag(highPrices);
+        List<Double> zigZagPointsLow = this.zigZagStrategy.calculateZigZag(lowPrices);
+
+        // Use the last two ZigZag points for the Fibonacci calculation
+        double high = zigZagPointsHigh.get(zigZagPointsHigh.size() - 1); // Last ZigZag high
+        double low = zigZagPointsLow.get(zigZagPointsLow.size() - 1);    // Last ZigZag low
+
+        // Calculate Fibonacci levels based on the ZigZag high and low points
+        double[] fibLevels = this.fibonacciCalculator.calculateFibonacciLevels(high, low);
+
+        // Initialize sell price to stopLoss
         double sellPrice = stopLoss;
-        if (currentPrice >= fibLevels[2] && harmonicPatternDetected) {
+
+        // Determine sell price based on the Fibonacci levels and current price
+        if (currentPrice >= fibLevels[2]) {  // Fibonacci 0.500 level
             sellPrice = fibLevels[2];
             log.info("Setting sell price to Fibonacci 0.500 level: {}", sellPrice);
-        } else if (currentPrice >= fibLevels[3]) {
+        } else if (currentPrice >= fibLevels[3]) {  // Fibonacci 0.618 level
             sellPrice = fibLevels[3];
             log.info("Setting sell price to Fibonacci 0.618 level: {}", sellPrice);
         }
 
+        // Return the calculated sell price
         return sellPrice;
     }
+
 
     public Double calculateSellPriceWithBotConfiguration(BuyOrder buyOrder) {
         double sellPrice = PriceCalculator.calculateCoinPriceInc(buyOrder.getBuyPrice(), this.botConfiguration.getProfitPercentage());
