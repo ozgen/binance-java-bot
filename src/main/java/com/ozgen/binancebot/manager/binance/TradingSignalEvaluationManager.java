@@ -41,7 +41,7 @@ public class TradingSignalEvaluationManager {
             throw new RuntimeException(e);
         }
 
-        TradingSignal tradingSignal = this.tradingSignalEvaluator.generateSignal(klines, symbol);
+        TradingSignal tradingSignal = this.tradingSignalEvaluator.generateSignalWithTrendDecision(klines, symbol);
         tradingSignal.setStrategy(symbolSignalEvent.getTradingStrategy());
         boolean valid = TradingSignalValidator.validate(tradingSignal);
         if (!valid) {
@@ -49,7 +49,8 @@ public class TradingSignalEvaluationManager {
             return;
         }
 
-        if (this.tradingSignalEvaluator.checkTrend(klines, tradingSignal).equals(TrendingStatus.BUY)) {
+        if (this.tradingSignalEvaluator.checkTrend(klines).equals(TrendingStatus.BUY)
+                && tradingSignal.getTrendingStatus().equals(TrendingStatus.BUY)) {
             log.info("Trade entry confirmed for symbol: {}", tradingSignal.getSymbol());
             this.sendInfoMessage(tradingSignal.toString());
             tradingSignal.setIsProcessed(ProcessStatus.INIT);
@@ -60,7 +61,7 @@ public class TradingSignalEvaluationManager {
         } else {
             log.info("The coin price is not available to buy symbol: {}", tradingSignal.getSymbol());
             String message = String.format("The trading signal generated with %s coin " +
-                    "but the coin price is not suitable to buy, trading signal: \n%s", tradingSignal.getSymbol(),
+                            "but the coin price is not suitable to buy, trading signal: \n%s", tradingSignal.getSymbol(),
                     tradingSignal.formatTradingSignal());
             this.sendInfoMessage(message);
         }

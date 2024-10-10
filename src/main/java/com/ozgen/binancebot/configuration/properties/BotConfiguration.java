@@ -18,4 +18,5 @@ public class BotConfiguration {
     private String currency;
     private String currencyRate;
     private float binanceFeePercentage;
+    private double zigzagPercentage;
 }
