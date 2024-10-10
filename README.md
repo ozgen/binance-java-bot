@@ -146,7 +146,7 @@ java -jar target/binance-telegram-bot-0.0.1-SNAPSHOT.jar
 
 Here's an example of how the bot works when a user enters a symbol and selects a trading strategy:
 
-![Telegram Bot Example](./img/example.jpeg)
+![Telegram Bot Example](./img/example-2.jpeg)
 
 1. The user enters a trading pair (e.g., `btcusdt`).
 2. The bot asks the user to choose a trading strategy.
