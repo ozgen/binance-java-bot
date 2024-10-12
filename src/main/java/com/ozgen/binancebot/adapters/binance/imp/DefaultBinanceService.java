@@ -2,6 +2,7 @@ package com.ozgen.binancebot.adapters.binance.imp;
 
 import com.binance.connector.client.SpotClient;
 import com.ozgen.binancebot.adapters.binance.BinanceAPI;
+import com.ozgen.binancebot.model.binance.IntervalType;
 import com.ozgen.binancebot.utils.parser.GenericParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -99,10 +100,10 @@ public class DefaultBinanceService implements BinanceAPI {
     }
 
     @Override
-    public String getKlines(String symbol) {
+    public String getKlines(String symbol, IntervalType interval) {
         LinkedHashMap<String, Object> parameters = new LinkedHashMap<>();
         parameters.put("symbol", symbol);
-        parameters.put("interval", "1h");
+        parameters.put("interval", interval.getValue());
         return this.binanceClient.createMarket().klines(parameters);
     }
 

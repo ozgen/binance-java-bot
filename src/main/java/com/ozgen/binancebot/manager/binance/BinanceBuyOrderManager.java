@@ -88,7 +88,7 @@ public class BinanceBuyOrderManager {
     }
 
     private boolean isTradeSignalInRange(TradingSignal tradingSignal, TickerData tickerData) {
-        double buyPrice = PriceCalculator.calculateCoinPriceInc(GenericParser.getDouble(tickerData.getLastPrice()).get(),
+        double buyPrice = PriceCalculator.calculateCoinPriceInc(GenericParser.getDouble(tickerData.getLastPrice()),
                 this.botConfiguration.getPercentageInc());
         return TradingSignalValidator.isAvailableToBuy(buyPrice, tradingSignal);
     }
@@ -104,9 +104,9 @@ public class BinanceBuyOrderManager {
     }
 
     private void populateBuyOrderDetails(BuyOrder buyOrder, TradingSignal tradingSignal, TickerData tickerData) throws Exception {
-        double buyPrice = PriceCalculator.calculateCoinPriceInc(GenericParser.getDouble(tickerData.getLastPrice()).get(), this.botConfiguration.getPercentageInc());
+        double buyPrice = PriceCalculator.calculateCoinPriceInc(GenericParser.getDouble(tickerData.getLastPrice()), this.botConfiguration.getPercentageInc());
         double coinAmount = this.binanceHelper.calculateCoinAmount(buyPrice, tradingSignal);
-        double stopLoss = GenericParser.getDouble(tradingSignal.getEntryEnd()).get();
+        double stopLoss = GenericParser.getDouble(tradingSignal.getEntryEnd());
 
         buyOrder.setSymbol(tradingSignal.getSymbol());
         buyOrder.setCoinAmount(coinAmount);

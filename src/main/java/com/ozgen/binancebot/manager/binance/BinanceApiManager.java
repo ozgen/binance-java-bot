@@ -3,6 +3,7 @@ package com.ozgen.binancebot.manager.binance;
 import com.ozgen.binancebot.adapters.binance.BinanceAPI;
 import com.ozgen.binancebot.model.binance.AssetBalance;
 import com.ozgen.binancebot.model.binance.CancelAndNewOrderResponse;
+import com.ozgen.binancebot.model.binance.IntervalType;
 import com.ozgen.binancebot.model.binance.KlineData;
 import com.ozgen.binancebot.model.binance.OpenOrder;
 import com.ozgen.binancebot.model.binance.OrderInfo;
@@ -99,7 +100,7 @@ public class BinanceApiManager {
     }
 
     List<KlineData> getListOfKlineData(String symbol) throws Exception {
-        String klinesJson = this.binanceAPI.getKlines(symbol);
+        String klinesJson = this.binanceAPI.getKlines(symbol, IntervalType.THIRTY_MINUTES);
         List<KlineData> klineDataList = JsonParser.parseKlinesJson(klinesJson);
         klineDataList.forEach(klineData -> klineData.setSymbol(symbol));
         log.info("kline data list are parsed, successfully.");

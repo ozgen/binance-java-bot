@@ -109,7 +109,7 @@ public class TradingSignalEvaluator {
     public TrendingStatus checkTrend(List<KlineData> klines) {
         // Convert KlineData to a list of prices (using close prices for simplicity)
         List<Double> prices = klines.stream()
-                .map(k -> GenericParser.getDouble(k.getClosePrice()).get())
+                .map(k -> GenericParser.getDouble(k.getClosePrice()))
                 .collect(Collectors.toList());
 
         // Calculate the ZigZag points

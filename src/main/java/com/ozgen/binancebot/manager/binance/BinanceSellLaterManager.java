@@ -27,6 +27,7 @@ public class BinanceSellLaterManager {
     private final ApplicationEventPublisher publisher;
     private final ScheduleConfiguration scheduleConfiguration;
     private final BinanceHelper binanceHelper;
+    private final DateFactory dateFactory;
 
     //todo write scheduler for this method and write unit tests...
     public void processSellLaterOrders() {
@@ -77,6 +78,6 @@ public class BinanceSellLaterManager {
     }
 
     private Date getSearchDate() {
-        return DateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
+        return this.dateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
     }
 }

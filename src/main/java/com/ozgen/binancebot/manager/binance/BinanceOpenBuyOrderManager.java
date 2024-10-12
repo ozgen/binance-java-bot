@@ -38,6 +38,7 @@ public class BinanceOpenBuyOrderManager {
     private final ApplicationEventPublisher publisher;
     private final ScheduleConfiguration scheduleConfiguration;
     private final BotConfiguration botConfiguration;
+    private final DateFactory dateFactory;
 
     public void processOpenBuyOrders() {
         Date searchDate = this.getSearchDate();
@@ -90,11 +91,9 @@ public class BinanceOpenBuyOrderManager {
         });
     }
 
-
     private Date getSearchDate() {
-        return DateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
+        return this.dateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
     }
-
 
     private BuyOrder createCancelAndBuyOrder(TradingSignal tradingSignal, TickerData tickerData, OrderInfo orderInfo) {
         String symbol = tradingSignal.getSymbol();
@@ -104,9 +103,9 @@ public class BinanceOpenBuyOrderManager {
     }
 
     private BuyOrder prepareBuyOrder(TradingSignal tradingSignal, TickerData tickerData, OrderInfo orderInfo, String symbol) {
-        double coinAmount = GenericParser.getDouble(orderInfo.getOrigQty()).get() - GenericParser.getDouble(orderInfo.getExecutedQty()).get();
-        double stopLoss = GenericParser.getDouble(tradingSignal.getEntryEnd()).get();
-        double buyPrice = PriceCalculator.calculateCoinPriceInc(GenericParser.getDouble(tickerData.getLastPrice()).get(), this.botConfiguration.getPercentageInc());
+        double coinAmount = GenericParser.getDouble(orderInfo.getOrigQty()) - GenericParser.getDouble(orderInfo.getExecutedQty());
+        double stopLoss = GenericParser.getDouble(tradingSignal.getEntryEnd());
+        double buyPrice = PriceCalculator.calculateCoinPriceInc(GenericParser.getDouble(tickerData.getLastPrice()), this.botConfiguration.getPercentageInc());
 
         BuyOrder buyOrder = this.botOrderService.getBuyOrder(tradingSignal).orElse(null);
         if (buyOrder == null) {

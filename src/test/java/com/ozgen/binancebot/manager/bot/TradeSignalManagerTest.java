@@ -5,6 +5,7 @@ import com.ozgen.binancebot.configuration.properties.ScheduleConfiguration;
 import com.ozgen.binancebot.model.events.IncomingTradingSignalEvent;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
 import com.ozgen.binancebot.service.TradingSignalService;
+import com.ozgen.binancebot.utils.DateFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +33,9 @@ public class TradeSignalManagerTest {
     @Mock
     private ScheduleConfiguration scheduleConfiguration;
 
+    @Mock
+    private DateFactory dateFactory;
+
     @InjectMocks
     private TradeSignalManager tradeSignalManager;
 
@@ -44,7 +47,6 @@ public class TradeSignalManagerTest {
     @Test
     public void testProcessInitTradingSignals() {
         // Arrange
-        Date mockDate = new Date();
         when(scheduleConfiguration.getMonthBefore())
                 .thenReturn(1);
         when(tradingSignalService.getAllTradingSignalsAfterDateAndIsProcessIn(any(), anyList()))

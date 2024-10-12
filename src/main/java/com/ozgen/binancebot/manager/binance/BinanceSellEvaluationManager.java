@@ -14,6 +14,7 @@ import com.ozgen.binancebot.service.BotOrderService;
 import com.ozgen.binancebot.service.FutureTradeService;
 import com.ozgen.binancebot.service.TradingSignalService;
 import com.ozgen.binancebot.utils.DateFactory;
+import com.ozgen.binancebot.utils.PriceCalculator;
 import com.ozgen.binancebot.utils.SymbolGenerator;
 import com.ozgen.binancebot.utils.parser.GenericParser;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class BinanceSellEvaluationManager {
     private final ScheduleConfiguration scheduleConfiguration;
     private final TradingSignalService tradingSignalService;
     private final BinanceHelper binanceHelper;
+    private final DateFactory dateFactory;
     private final ApplicationEventPublisher publisher;
 
     // todo decide which one is more suitable to sell later...
@@ -115,12 +117,17 @@ public class BinanceSellEvaluationManager {
     }
 
     private SellOrder initializeSellOrder(BuyOrder buyOrder, Double coinAmount, Double sellPrice, TradingSignal tradingSignal) {
-        double stopLoss = GenericParser.getDouble(tradingSignal.getStopLoss()).get();
+        double stopLoss = GenericParser.getDouble(tradingSignal.getStopLoss());
         String sellOrderSymbol = buyOrder.getSymbol();
 
         SellOrder sellOrder = this.botOrderService.getSellOrder(tradingSignal).orElse(null);
         if (sellOrder == null) {
             sellOrder = new SellOrder();
+        }
+
+        if (sellPrice == stopLoss){
+            log.info("selling price is equals to stoplost, so stoplost price will be optimizing");
+            stopLoss =  PriceCalculator.calculateCoinPriceDec(stopLoss, this.botConfiguration.getProfitPercentage());
         }
 
         sellOrder.setSymbol(sellOrderSymbol);
@@ -148,7 +155,7 @@ public class BinanceSellEvaluationManager {
     }
 
     private Date getSearchDate() {
-        return DateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
+        return this.dateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
     }
 
     private void sendInfoMessage(String message) {
