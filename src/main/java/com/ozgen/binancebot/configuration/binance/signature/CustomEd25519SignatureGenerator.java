@@ -13,6 +13,7 @@ import java.util.Base64;
 
 
 public final class CustomEd25519SignatureGenerator implements SignatureGenerator {
+
     private Ed25519PrivateKeyParameters privateKey;
 
     public CustomEd25519SignatureGenerator(String privateKeyPem) throws IOException {

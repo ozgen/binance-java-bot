@@ -9,12 +9,12 @@ import java.util.Optional;
 
 public class GenericParser {
 
-    public static Optional<Double> getDouble(String price) {
+    public static double getDouble(String price) {
         try {
-            return Optional.ofNullable(price).map(Double::parseDouble);
-        } catch (NumberFormatException e) {
+            return Double.parseDouble(price);
+        } catch (Exception e) {
             // Log the exception, return empty, or handle it based on your application's needs
-            return Optional.empty();
+            return 0.0;
         }
     }
 
@@ -43,14 +43,16 @@ public class GenericParser {
                 .findFirst();
         if (targetBalance.isPresent()) {
             String freeValue = targetBalance.get().getFree();
-            return GenericParser.getDouble(freeValue).get();
-        } else {
-            return 0.0;
+            Double doubleValue = GenericParser.getDouble(freeValue);
+            if (doubleValue != null) {
+                return doubleValue;
+            }
         }
+        return 0.0;
     }
 
     public static double getFormattedDouble(String data) {
-        return getFormattedDouble(getDouble(data).get());
+        return getFormattedDouble(getDouble(data));
     }
-    }
+}
 

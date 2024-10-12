@@ -24,11 +24,12 @@ public class TradeSignalManager {
     private final ApplicationEventPublisher publisher;
     private final TradingSignalService tradingSignalService;
     private final ScheduleConfiguration scheduleConfiguration;
+    private final DateFactory dateFactory;
 
     public void processInitTradingSignals() {
         log.info("Processing initial trading signals...");
         List<Integer> list = List.of(INIT);
-        Date dateBeforeInMonths = DateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
+        Date dateBeforeInMonths = this.dateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
         log.debug("Retrieving trading signals after date: {}", dateBeforeInMonths);
         List<TradingSignal> tradingSignals = this.tradingSignalService.getAllTradingSignalsAfterDateAndIsProcessIn(dateBeforeInMonths, list);
         log.info("Found {} trading signals to process.", tradingSignals.size());

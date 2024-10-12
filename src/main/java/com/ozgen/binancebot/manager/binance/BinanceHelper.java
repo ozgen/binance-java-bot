@@ -35,7 +35,7 @@ public class BinanceHelper {
             Double btcPriceInUsd = this.getBtcToUsdConversionRate();
             return this.hasAccountEnoughUSD(assets, btcPriceInUsd);
         } else {
-            Double investAmountOfBtc = GenericParser.getDouble(tradingSignal.getInvestAmount()).get();
+            Double investAmountOfBtc = GenericParser.getDouble(tradingSignal.getInvestAmount());
             return this.hasAccountEnoughBTC(assets, investAmountOfBtc);
         }
     }
@@ -50,7 +50,7 @@ public class BinanceHelper {
             // Calculate how much BTC you can buy with $500
             investAmountOfBtc = dollarsToInvest / btcPriceInUsd;
         } else {
-            investAmountOfBtc = GenericParser.getDouble(tradingSignal.getInvestAmount()).get();
+            investAmountOfBtc = GenericParser.getDouble(tradingSignal.getInvestAmount());
         }
         double binanceFee = investAmountOfBtc * binanceFeePercentage;
 
@@ -63,7 +63,7 @@ public class BinanceHelper {
     public boolean isCoinPriceAvailableToSell(BuyOrder buyOrder, TickerData tickerData) {
         Double buyPrice = buyOrder.getBuyPrice();
         double sellPrice = PriceCalculator.calculateCoinPriceInc(buyPrice, this.botConfiguration.getProfitPercentage());
-        Double lastPrice = GenericParser.getDouble(tickerData.getLastPrice()).get();
+        Double lastPrice = GenericParser.getDouble(tickerData.getLastPrice());
         Double stopLoss = buyOrder.getStopLoss();
         return sellPrice <= lastPrice || lastPrice <= stopLoss;
     }
@@ -156,7 +156,7 @@ public class BinanceHelper {
         if (tickerData == null) {
             return sellPrice;
         }
-        Double currentPrice = GenericParser.getDouble(tickerData.getLastPrice()).get();
+        Double currentPrice = GenericParser.getDouble(tickerData.getLastPrice());
         if (currentPrice <= stopLoss) {
             sellPrice = stopLoss;
         }
@@ -186,7 +186,7 @@ public class BinanceHelper {
 
     private Double getBtcToUsdConversionRate() throws Exception {
         TickerData tickerPrice24 = this.binanceApiManager.getTickerPrice24(this.botConfiguration.getCurrencyRate());
-        return GenericParser.getDouble(tickerPrice24.getLastPrice()).get();
+        return GenericParser.getDouble(tickerPrice24.getLastPrice());
     }
 
     private boolean hasAccountEnoughUSD(List<AssetBalance> assets, Double btcToUsdRate) {

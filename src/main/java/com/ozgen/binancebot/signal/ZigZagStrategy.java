@@ -81,7 +81,6 @@ public class ZigZagStrategy {
             return new double[]{zigzagHigh, zigzagLow};
         }
 
-        // Return null if the points weren't found
         return null;
     }
 }

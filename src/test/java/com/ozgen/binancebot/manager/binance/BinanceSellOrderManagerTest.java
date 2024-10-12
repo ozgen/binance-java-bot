@@ -38,6 +38,7 @@ public class BinanceSellOrderManagerTest {
     private static final String END_ENTRY = "0.011";
 
     private static final String STOPLOSS = "0.008";
+    private static final Double STOPLOSS_DOUBLE = 0.008;
     private static final String CURRENCY_RATE = "BTCUSD";
     private static final Double AMOUNT = 100.0;
     private static final Double PERCENTAGE_INC = 0.5;
@@ -144,6 +145,45 @@ public class BinanceSellOrderManagerTest {
         assertEquals(SYMBOL, sellOrder.getSymbol());
         assertEquals(expectedSellPrice, sellOrder.getSellPrice());
         assertEquals(Double.parseDouble(STOPLOSS), sellOrder.getStopLoss());
+        assertEquals(this.tradingSignal, sellOrder.getTradingSignal());
+        verify(this.binanceApiManager)
+                .newOrderWithStopLoss(SYMBOL, sellOrder.getSellPrice(), sellOrder.getCoinAmount(), sellOrder.getStopLoss());
+    }
+
+    @Test
+    void testProcessNewSellOrderEvent_withStoplossSellPrice_Success() throws Exception {
+        // Arrange
+        when(this.binanceApiManager.getUserAsset())
+                .thenReturn(List.of(this.assetBalance));
+        when(this.assetBalance.getAsset())
+                .thenReturn(BNB);
+        when(this.assetBalance.getFree())
+                .thenReturn(String.valueOf(BNB_AMOUNT));
+        when(this.botOrderService.getSellOrder(this.tradingSignal))
+                .thenReturn(Optional.empty());
+        when(this.botOrderService.createSellOrder(any(SellOrder.class)))
+                .thenAnswer((Answer<SellOrder>) invocation -> (SellOrder) invocation.getArguments()[0]);
+        when(this.binanceApiManager.newOrderWithStopLoss(any(), any(), any(), any()))
+                .thenReturn(this.orderResponse);
+        when(this.binanceHelper.calculateSellPriceWithBotConfiguration(this.buyOrder))
+                .thenReturn(Double.parseDouble(STOPLOSS));
+        NewSellOrderEvent event = new NewSellOrderEvent(this, this.buyOrder);
+
+        //Act
+        this.binanceSellOrderManager.processNewSellOrderEvent(event);
+
+        // Assert
+        double expectedStoploss = STOPLOSS_DOUBLE - (STOPLOSS_DOUBLE * (PROFIT_PERCENTAGE / 100));
+        verify(this.botOrderService)
+                .getSellOrder(this.tradingSignal);
+        ArgumentCaptor<SellOrder> sellOrderCaptor = ArgumentCaptor.forClass(SellOrder.class);
+        verify(this.botOrderService)
+                .createSellOrder(sellOrderCaptor.capture());
+        SellOrder sellOrder = sellOrderCaptor.getValue();
+        assertEquals(BNB_AMOUNT, sellOrder.getCoinAmount());
+        assertEquals(SYMBOL, sellOrder.getSymbol());
+        assertEquals(STOPLOSS_DOUBLE, sellOrder.getSellPrice());
+        assertEquals(expectedStoploss, sellOrder.getStopLoss());
         assertEquals(this.tradingSignal, sellOrder.getTradingSignal());
         verify(this.binanceApiManager)
                 .newOrderWithStopLoss(SYMBOL, sellOrder.getSellPrice(), sellOrder.getCoinAmount(), sellOrder.getStopLoss());

@@ -27,6 +27,7 @@ public class BinanceOpenSellOrderManager {
     private final TradingSignalService tradingSignalService;
     private final BotOrderService botOrderService;
     private final ApplicationEventPublisher publisher;
+    private final DateFactory dateFactory;
     private final ScheduleConfiguration scheduleConfiguration;
 
     public void processOpenSellOrders() {
@@ -89,6 +90,6 @@ public class BinanceOpenSellOrderManager {
     }
 
     private Date getSearchDate() {
-        return DateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
+        return this.dateFactory.getDateBeforeInMonths(this.scheduleConfiguration.getMonthBefore());
     }
 }

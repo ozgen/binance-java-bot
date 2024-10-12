@@ -29,17 +29,17 @@ public class HarmonicPatternStrategy {
     // Function to calculate ratios and detect patterns
     public boolean detectABCDPattern(KlineData x, KlineData a, KlineData b, KlineData c, KlineData d) {
 
-        double xab = Math.abs(GenericParser.getDouble(b.getClosePrice()).get() - GenericParser.getDouble(a.getClosePrice()).get()) /
-                Math.abs(GenericParser.getDouble(x.getClosePrice()).get() - GenericParser.getDouble(a.getClosePrice()).get());
+        double xab = Math.abs(GenericParser.getDouble(b.getClosePrice()) - GenericParser.getDouble(a.getClosePrice())) /
+                Math.abs(GenericParser.getDouble(x.getClosePrice()) - GenericParser.getDouble(a.getClosePrice()));
 
-        double abc = Math.abs(GenericParser.getDouble(b.getClosePrice()).get() - GenericParser.getDouble(c.getClosePrice()).get()) /
-                Math.abs(GenericParser.getDouble(a.getClosePrice()).get() - GenericParser.getDouble(b.getClosePrice()).get());
+        double abc = Math.abs(GenericParser.getDouble(b.getClosePrice()) - GenericParser.getDouble(c.getClosePrice())) /
+                Math.abs(GenericParser.getDouble(a.getClosePrice()) - GenericParser.getDouble(b.getClosePrice()));
 
-        double bcd = Math.abs(GenericParser.getDouble(c.getClosePrice()).get() - GenericParser.getDouble(d.getClosePrice()).get()) /
-                Math.abs(GenericParser.getDouble(b.getClosePrice()).get() - GenericParser.getDouble(c.getClosePrice()).get());
+        double bcd = Math.abs(GenericParser.getDouble(c.getClosePrice()) - GenericParser.getDouble(d.getClosePrice())) /
+                Math.abs(GenericParser.getDouble(b.getClosePrice()) - GenericParser.getDouble(c.getClosePrice()));
 
-        double xad = Math.abs(GenericParser.getDouble(a.getClosePrice()).get() - GenericParser.getDouble(d.getClosePrice()).get()) /
-                Math.abs(GenericParser.getDouble(x.getClosePrice()).get() - GenericParser.getDouble(a.getClosePrice()).get());
+        double xad = Math.abs(GenericParser.getDouble(a.getClosePrice()) - GenericParser.getDouble(d.getClosePrice())) /
+                Math.abs(GenericParser.getDouble(x.getClosePrice()) - GenericParser.getDouble(a.getClosePrice()));
 
         boolean abcdDetected = isABCD(abc, bcd);
         boolean batDetected = isBat(xab, abc, bcd, xad);

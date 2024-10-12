@@ -12,6 +12,7 @@ import com.ozgen.binancebot.model.events.NewSellOrderEvent;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
 import com.ozgen.binancebot.service.BotOrderService;
 import com.ozgen.binancebot.service.TradingSignalService;
+import com.ozgen.binancebot.utils.DateFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -63,6 +64,8 @@ public class BinanceOpenBuyOrderManagerTest {
     private ScheduleConfiguration scheduleConfiguration;
     @Mock
     private BotConfiguration botConfiguration;
+    @Mock
+    private DateFactory dateFactory;
 
     @InjectMocks
     private BinanceOpenBuyOrderManager binanceOpenBuyOrderManager;

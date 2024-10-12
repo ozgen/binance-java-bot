@@ -1,5 +1,7 @@
 package com.ozgen.binancebot.adapters.binance;
 
+import com.ozgen.binancebot.model.binance.IntervalType;
+
 public interface BinanceAPI {
 
     public String getBTCWalletStatus();
@@ -23,7 +25,7 @@ public interface BinanceAPI {
 
     public String getUserAsset();
 
-    public String getKlines(String symbol);
+    public String getKlines(String symbol, IntervalType interval);
 
     public boolean checkSymbol(String symbol);
 }

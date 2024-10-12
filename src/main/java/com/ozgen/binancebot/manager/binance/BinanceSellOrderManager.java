@@ -10,6 +10,7 @@ import com.ozgen.binancebot.model.events.NewSellOrderEvent;
 import com.ozgen.binancebot.model.telegram.TradingSignal;
 import com.ozgen.binancebot.service.BotOrderService;
 import com.ozgen.binancebot.service.FutureTradeService;
+import com.ozgen.binancebot.utils.PriceCalculator;
 import com.ozgen.binancebot.utils.SymbolGenerator;
 import com.ozgen.binancebot.utils.parser.GenericParser;
 import lombok.RequiredArgsConstructor;
@@ -101,12 +102,17 @@ public class BinanceSellOrderManager {
 
     private SellOrder initializeSellOrder(BuyOrder buyOrder, Double coinAmount, TradingSignal tradingSignal) {
         double sellPrice = this.binanceHelper.calculateSellPriceWithBotConfiguration(buyOrder);
-        double stopLoss = GenericParser.getDouble(tradingSignal.getStopLoss()).get();
+        double stopLoss = GenericParser.getDouble(tradingSignal.getStopLoss());
         String sellOrderSymbol = buyOrder.getSymbol();
 
         SellOrder sellOrder = this.botOrderService.getSellOrder(tradingSignal).orElse(null);
         if (sellOrder == null) {
             sellOrder = new SellOrder();
+        }
+
+        if (sellPrice == stopLoss){
+            log.info("selling price is equals to stoplost, so stoplost price will be optimizing");
+            stopLoss =  PriceCalculator.calculateCoinPriceDec(stopLoss, this.botConfiguration.getProfitPercentage());
         }
 
         sellOrder.setSymbol(sellOrderSymbol);
